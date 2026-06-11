@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edge-readaloud-pyside6"
+version = "0.1.0"
+description = "Cross-platform PySide6 read-aloud app using edge-tts with offline sentence-synchronized bundles."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Randall Morgan" }
+]
+dependencies = [
+  "PySide6>=6.7",
+  "edge-tts>=6.1.0",
+  "beautifulsoup4>=4.12",
+  "ebooklib>=0.18",
+  "PyMuPDF>=1.24",
+  "python-docx>=1.1",
+  "striprtf>=0.0.26"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "ruff>=0.6"
+]
+
+[project.scripts]
+edge-reader = "edge_reader.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
