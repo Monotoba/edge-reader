@@ -120,7 +120,8 @@ pytest                    # Run tests
 - Load text, documents, PDFs, EPUB ebooks
 - **Play immediately:** Listen with live audio synthesis (internet required)
 - **Or generate offline:** Create bundles (`.edgevoice.zip`) for replay without internet
-- Sentence-by-sentence highlighting during playback
+- **Sentence highlighting** during playback (yellow background)
+- **Word-level highlighting** option for real-time word tracking (cyan background, bold)
 - Support for multiple languages and voices
 - TTS speed control
 - Cross-platform (Linux, macOS, Windows)

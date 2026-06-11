@@ -82,6 +82,7 @@ The voice list updates automatically when you change the language dropdown. Micr
 - **Bundles are completely offline** — Once generated, bundles are self-contained and work without any internet connection.
 - **Large documents** — Documents are automatically split into manageable chunks. Very long books may take several minutes to generate into a bundle.
 - **Live is fast, bundles are reliable** — Use live mode for quick reads; use bundles for critical playback (presentations, travel) where network isn't available.
+- **Word-level highlighting** — Check "Word-level Highlight" in the toolbar while playing a bundle to see individual words highlighted as they're spoken. Great for language learning!
 - **Detailed error logs** — If synthesis fails, check the detailed error information to diagnose issues.
 
 ## Supported Audio Formats

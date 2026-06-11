@@ -266,7 +266,48 @@ pip install PyMuPDF
 - Check for temp files: `ls -lh /tmp/edge_reader_bundle_*`
 - Manually delete old temp bundles if needed
 
+## Word-Level Highlighting Issues
+
+### Word-level highlighting doesn't work
+
+**Causes & Solutions:**
+
+1. **Live playback mode**
+   - Word-level highlighting only works with offline bundles
+   - Bundle generation captures the word boundary events needed for highlighting
+   - Generate an offline bundle first, then open it to use word highlighting
+
+2. **Feature not enabled**
+   - Check that "Word-level Highlight" checkbox in toolbar is checked
+   - Checkbox state is saved; verify it's enabled after reopening the app
+
+3. **Bundle generated without word boundaries**
+   - Very old bundles may not have boundary event data
+   - Regenerate the bundle to capture word timing information
+   - Bundles created with recent versions of Edge Reader include this data
+
+### Words are highlighted incorrectly or out of sync
+
+**Causes & Solutions:**
+
+1. **Sentence splitting mismatch**
+   - If sentences were split differently than when bundle was generated, word positions may not align
+   - This is rare but can happen if document text changed
+   - Regenerate the bundle from the current document
+
+2. **Timing drift**
+   - If playback is slightly ahead or behind expected timing, words may highlight early/late
+   - This is normal for small timing variations (< 100ms)
+   - Timing accuracy improves with better audio quality and shorter sentences
+
 ## UI Issues
+
+### Word-level highlight checkbox disappeared
+
+**Solution:**
+- Checkbox is always present in the toolbar
+- If you don't see it, try resizing the window or scrolling the toolbar
+- If still missing, reset settings: See [Settings & Preferences](USER_MANUAL.md#settings--preferences)
 
 ### Window layout is broken
 
