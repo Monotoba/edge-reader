@@ -66,35 +66,35 @@ def parse_document_paragraphs(text: str) -> list[tuple[int, str]]:
     with a preview of the first 60 characters.
     """
     paragraphs: list[tuple[int, str]] = []
-    lines = text.split('\n')
     current_pos = 0
+    current_paragraph_start = 0
     current_paragraph = []
 
-    for line in lines:
+    lines = text.split('\n')
+
+    for i, line in enumerate(lines):
         if not line.strip():
             # Blank line - end current paragraph if it exists
             if current_paragraph:
                 para_text = ' '.join(current_paragraph)
                 preview = para_text[:60].strip()
                 if preview:
-                    paragraphs.append((current_pos, preview))
+                    paragraphs.append((current_paragraph_start, preview))
                 current_paragraph = []
         else:
-            # Add to current paragraph
+            # Start of a new paragraph
             if not current_paragraph:
-                current_pos = text.find(line, current_pos)
+                current_paragraph_start = current_pos
             current_paragraph.append(line.strip())
 
-        current_pos += len(line) + 1  # +1 for newline
+        current_pos += len(line) + 1  # +1 for newline character
 
     # Don't forget last paragraph
     if current_paragraph:
         para_text = ' '.join(current_paragraph)
         preview = para_text[:60].strip()
         if preview:
-            para_start = text.rfind('\n'.join(current_paragraph))
-            if para_start >= 0:
-                paragraphs.append((para_start, preview))
+            paragraphs.append((current_paragraph_start, preview))
 
     return paragraphs
 
