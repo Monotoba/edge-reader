@@ -1,10 +1,5 @@
 # Edge Reader — PySide6 + edge-tts
 
-[![Tests](https://github.com/Monotoba/edge-reader/workflows/Tests/badge.svg)](https://github.com/Monotoba/edge-reader/actions/workflows/tests.yml)
-[![Lint & Code Quality](https://github.com/Monotoba/edge-reader/workflows/Lint%20&%20Code%20Quality/badge.svg)](https://github.com/Monotoba/edge-reader/actions/workflows/lint.yml)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
 A cross-platform desktop read-aloud application that loads text/document/ebook files and reads them aloud using Microsoft Edge online neural TTS through `edge-tts`. Play documents immediately with live synthesis (internet required), or generate a self-contained offline replay bundle for later offline playback. Highlights each sentence while reading.
 
 ## Important status note
@@ -25,7 +20,8 @@ A cross-platform desktop read-aloud application that loads text/document/ebook f
 - Language and voice selector.
 - TTS speed setting using the `edge-tts` rate parameter.
 - Volume control.
-- Sentence-by-sentence highlighting during playback.
+- **Sentence-by-sentence highlighting** during playback (yellow background).
+- **Word-level highlighting** option for real-time word tracking (cyan background, bold).
 - **Live playback:** Play documents immediately with on-the-fly audio synthesis (requires internet).
 - **Offline bundles:** Generate `.edgevoice.zip` files for later playback without internet access. Bundles contain:
   - `document.txt`
@@ -166,10 +162,16 @@ Useful files:
 - `src/edge_reader/bundle.py` — offline bundle creation/loading/unpacking.
 - `tests/` — unit tests for parser/rate/bundle logic.
 
+## Word-Level Highlighting
+
+Enable the "Word-level Highlight" checkbox in the toolbar to see individual words highlighted in cyan (with bold text) as they're spoken during playback. This feature uses the timing data captured from the edge-tts API for precise word synchronization.
+
+**Note:** Word-level highlighting requires an offline bundle; it does not work with live playback mode (as boundary events are only captured during bundle generation).
+
 ## Known limitations
 
 - `edge-tts` is unofficial and can change or break independently of this app.
 - Generating large books can take a long time because each sentence/chunk is synthesized separately.
 - PDF extraction quality depends on the source PDF. Scanned PDFs require OCR before this app can read them.
 - Sentence splitting is heuristic. It works well for ordinary prose but will not be perfect for every technical document, screenplay, OCR artifact, or legal citation.
-- Word-level highlighting is not enabled in the GUI yet, but the stored boundary events make it a natural next step.
+- Word-level highlighting is available in offline bundle mode only; live playback mode does not capture word boundary events.

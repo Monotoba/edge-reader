@@ -10,6 +10,7 @@ from PySide6.QtGui import QAction, QTextCharFormat, QTextCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
     QApplication,
+    QCheckBox,
     QComboBox,
     QDialog,
     QFileDialog,
@@ -114,6 +115,8 @@ class MainWindow(QMainWindow):
         self.live_mode = False
         self.live_temp_dir: Path | None = None
         self.live_worker: LivePlaybackWorker | None = None
+        self.word_level_highlight = False
+        self.word_boundaries: dict[int, list[dict[str, Any]]] = {}
 
         self.text_edit = QTextEdit(self)
         self.text_edit.setReadOnly(True)
@@ -125,6 +128,9 @@ class MainWindow(QMainWindow):
         self.rate_spin.setRange(-90, 200)
         self.rate_spin.setSuffix(" %")
         self.rate_spin.setValue(int(self.settings.value("rate", 0)))
+
+        self.word_highlight_checkbox = QCheckBox("Word-level Highlight", self)
+        self.word_highlight_checkbox.setChecked(bool(self.settings.value("word_highlight", False)))
 
         self.volume_slider = QSlider(Qt.Horizontal, self)
         self.volume_slider.setRange(0, 100)
@@ -212,6 +218,7 @@ class MainWindow(QMainWindow):
         toolbar.addSeparator()
         toolbar.addWidget(QLabel("TTS speed:"))
         toolbar.addWidget(self.rate_spin)
+        toolbar.addWidget(self.word_highlight_checkbox)
         toolbar.addWidget(self.generate_button)
         toolbar.addWidget(self.cancel_button)
 
@@ -246,10 +253,15 @@ class MainWindow(QMainWindow):
         self.rate_spin.valueChanged.connect(lambda value: self.settings.setValue("rate", value))
         self.volume_slider.valueChanged.connect(self._set_volume)
         self.voice_combo.currentTextChanged.connect(lambda _: self._save_voice_settings())
+        self.word_highlight_checkbox.stateChanged.connect(self._on_word_highlight_toggled)
 
     def _set_volume(self, value: int) -> None:
         self.audio_output.setVolume(value / 100.0)
         self.settings.setValue("volume", value)
+
+    def _on_word_highlight_toggled(self, state: int) -> None:
+        self.word_level_highlight = self.word_highlight_checkbox.isChecked()
+        self.settings.setValue("word_highlight", self.word_level_highlight)
 
     def _set_ready_state(self) -> None:
         have_doc = self.current_document is not None and bool(self.sentences)
@@ -456,6 +468,7 @@ class MainWindow(QMainWindow):
             self.bundle_dir = workdir
             self.bundle_manifest = manifest
             self.bundle_timings = timings
+            self._parse_word_boundaries(timings)
             self.current_document = LoadedDocument(path=path, title=str(manifest.get("title") or path.stem), text=text)
             self.sentences = [
                 SentenceSpan(
@@ -615,9 +628,10 @@ class MainWindow(QMainWindow):
                 self._play_current_sentence()
 
     def _on_position_changed(self, pos: int) -> None:
-        # The bundle stores API sync events for every segment. Sentence highlighting is tied to
-        # the current segment; this hook is where word-level highlighting can be added later.
-        _ = pos
+        # Highlight words based on playback position if word-level highlighting is enabled
+        if not self.word_level_highlight or self.current_sentence_index < 0:
+            return
+        self._highlight_word_at_position(pos)
 
     def _on_player_error(self, error: QMediaPlayer.Error, error_string: str) -> None:
         if error != QMediaPlayer.Error.NoError:
@@ -643,6 +657,73 @@ class MainWindow(QMainWindow):
         self.text_edit.setExtraSelections([selection])
         self.text_edit.setTextCursor(cursor)
         self.text_edit.ensureCursorVisible()
+
+    def _highlight_word_at_position(self, pos_ms: int) -> None:
+        if self.current_sentence_index not in self.word_boundaries:
+            return
+
+        boundaries = self.word_boundaries[self.current_sentence_index]
+        current_word = None
+
+        for boundary in boundaries:
+            start = boundary.get("offset_ms", 0)
+            duration = boundary.get("duration_ms", 0)
+            end = start + duration
+
+            if start <= pos_ms < end:
+                current_word = boundary
+                break
+
+        if current_word is None:
+            return
+
+        sentence_span = self.sentences[self.current_sentence_index]
+        word_text = current_word.get("text", "")
+
+        # Find word position in the sentence text
+        sentence_text = sentence_span.text
+        word_start = sentence_text.find(word_text)
+
+        if word_start == -1:
+            return
+
+        word_end = word_start + len(word_text)
+
+        # Convert to document-level positions
+        doc_word_start = sentence_span.start + word_start
+        doc_word_end = sentence_span.start + word_end
+
+        cursor = self.text_edit.textCursor()
+        cursor.setPosition(doc_word_start)
+        cursor.setPosition(doc_word_end, QTextCursor.KeepAnchor)
+
+        fmt = QTextCharFormat()
+        fmt.setBackground(Qt.GlobalColor.cyan)
+        fmt.setFontWeight(700)  # Bold
+
+        selection = QTextEdit.ExtraSelection()
+        selection.cursor = cursor
+        selection.format = fmt
+        self.text_edit.setExtraSelections([selection])
+        self.text_edit.setTextCursor(cursor)
+        self.text_edit.ensureCursorVisible()
+
+    def _parse_word_boundaries(self, timings: dict[str, Any]) -> None:
+        self.word_boundaries = {}
+        segments = timings.get("segments", [])
+
+        for segment in segments:
+            sentence_index = segment.get("sentence_index", -1)
+            if sentence_index < 0:
+                continue
+
+            words = [
+                event for event in segment.get("events", [])
+                if event.get("type") == "WordBoundary"
+            ]
+
+            if words:
+                self.word_boundaries[sentence_index] = words
 
     def _load_help_file(self, filename: str) -> str:
         """Load a help markdown file from the help directory."""

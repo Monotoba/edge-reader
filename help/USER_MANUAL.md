@@ -122,6 +122,24 @@ Shows:
 
 The progress bar fills as playback progresses through sentences.
 
+### Word-Level Highlighting
+
+Check the "Word-level Highlight" checkbox in the toolbar to enable real-time word highlighting during playback.
+
+**How it works:**
+- As each word is spoken, it is highlighted with a cyan background and bold text
+- The highlighting moves word-by-word through the document in sync with audio
+- Requires an offline bundle (boundary event data is captured during generation)
+- Does not work with live playback mode
+
+**When to use:**
+- Language learning or pronunciation practice
+- Helping readers with attention/tracking difficulties
+- Accessibility for some users
+- Analyzing word-level timing in the audio
+
+**Limitation:** Live playback mode does not capture word boundary data, so word-level highlighting is only available when playing from an offline bundle.
+
 ## Offline Bundles (Optional)
 
 An offline bundle (`.edgevoice.zip` file) contains pre-synthesized audio for a document, enabling playback without internet. Bundles are optional — you can start listening immediately with live mode.
