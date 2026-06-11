@@ -355,6 +355,12 @@ class MainWindow(QMainWindow):
         self.current_sentence_index = sentence_index
         self.status.showMessage(f"Jumped to sentence {sentence_index + 1}. Click Play to start reading from here.")
 
+        # Scroll document to make the position visible
+        cursor = self.text_edit.textCursor()
+        cursor.setPosition(char_pos)
+        self.text_edit.setTextCursor(cursor)
+        self.text_edit.ensureCursorVisible()
+
         # Highlight the sentence
         self._highlight_sentence(sentence_index)
         self.progress.setMaximum(len(self.sentences))
