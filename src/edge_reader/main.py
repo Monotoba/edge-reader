@@ -32,7 +32,7 @@ from PySide6.QtWidgets import (
 
 import tempfile
 
-from PySide6.QtCore import pyqtSignal
+from PySide6.QtCore import Signal
 
 from .bundle import read_bundle, unpack_bundle
 from .document import DocumentLoadError, load_document
@@ -47,7 +47,7 @@ APP_NAME = "EdgeReader"
 class NavigableTextEdit(QTextEdit):
     """QTextEdit that emits a signal when user double-clicks to jump to a location."""
 
-    jump_requested = pyqtSignal(int)  # Character position
+    jump_requested = Signal(int)  # Character position
 
     def mouseDoubleClickEvent(self, event):  # type: ignore[override]
         cursor = self.cursorForPosition(event.pos())
