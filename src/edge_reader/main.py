@@ -13,9 +13,12 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
+    QDockWidget,
     QFileDialog,
     QHBoxLayout,
     QLabel,
+    QListWidget,
+    QListWidgetItem,
     QMainWindow,
     QMessageBox,
     QPushButton,
@@ -54,6 +57,46 @@ class NavigableTextEdit(QTextEdit):
         pos = cursor.position()
         self.jump_requested.emit(pos)
         super().mouseDoubleClickEvent(event)
+
+
+def parse_document_paragraphs(text: str) -> list[tuple[int, str]]:
+    """Parse document into paragraphs, returning (start_position, preview_text) tuples.
+
+    Paragraphs are identified by blank lines. Each paragraph gets a numbered entry
+    with a preview of the first 60 characters.
+    """
+    paragraphs: list[tuple[int, str]] = []
+    lines = text.split('\n')
+    current_pos = 0
+    current_paragraph = []
+
+    for line in lines:
+        if not line.strip():
+            # Blank line - end current paragraph if it exists
+            if current_paragraph:
+                para_text = ' '.join(current_paragraph)
+                preview = para_text[:60].strip()
+                if preview:
+                    paragraphs.append((current_pos, preview))
+                current_paragraph = []
+        else:
+            # Add to current paragraph
+            if not current_paragraph:
+                current_pos = text.find(line, current_pos)
+            current_paragraph.append(line.strip())
+
+        current_pos += len(line) + 1  # +1 for newline
+
+    # Don't forget last paragraph
+    if current_paragraph:
+        para_text = ' '.join(current_paragraph)
+        preview = para_text[:60].strip()
+        if preview:
+            para_start = text.rfind('\n'.join(current_paragraph))
+            if para_start >= 0:
+                paragraphs.append((para_start, preview))
+
+    return paragraphs
 
 
 def _show_error_dialog(parent: QMainWindow, title: str, message: str, detail: str = "") -> None:
@@ -131,6 +174,14 @@ class MainWindow(QMainWindow):
         self.live_worker: LivePlaybackWorker | None = None
         self.word_level_highlight = False
         self.word_boundaries: dict[int, list[dict[str, Any]]] = {}
+        self.paragraphs: list[tuple[int, str]] = []
+
+        # Navigator panel
+        self.navigator_list = QListWidget(self)
+        self.navigator_list.setMaximumWidth(250)
+        navigator_dock = QDockWidget("Document Navigator", self)
+        navigator_dock.setWidget(self.navigator_list)
+        self.addDockWidget(Qt.LeftDockWidgetArea, navigator_dock)
 
         self.text_edit = NavigableTextEdit(self)
         self.text_edit.setReadOnly(True)
@@ -269,6 +320,7 @@ class MainWindow(QMainWindow):
         self.voice_combo.currentTextChanged.connect(lambda _: self._save_voice_settings())
         self.word_highlight_checkbox.stateChanged.connect(self._on_word_highlight_toggled)
         self.text_edit.jump_requested.connect(self._on_jump_to_position)
+        self.navigator_list.itemClicked.connect(self._on_navigator_item_clicked)
 
     def _set_volume(self, value: int) -> None:
         self.audio_output.setVolume(value / 100.0)
@@ -307,6 +359,29 @@ class MainWindow(QMainWindow):
         self._highlight_sentence(sentence_index)
         self.progress.setMaximum(len(self.sentences))
         self.progress.setValue(sentence_index + 1)
+
+    def _on_navigator_item_clicked(self, item: QListWidgetItem) -> None:
+        """Jump to paragraph clicked in navigator."""
+        index = self.navigator_list.row(item)
+        if index < 0 or index >= len(self.paragraphs):
+            return
+
+        char_pos, _ = self.paragraphs[index]
+        self._on_jump_to_position(char_pos)
+
+    def _populate_navigator(self) -> None:
+        """Populate the navigator with document paragraphs."""
+        self.navigator_list.clear()
+
+        if not self.current_document:
+            return
+
+        self.paragraphs = parse_document_paragraphs(self.current_document.text)
+
+        for i, (_, preview) in enumerate(self.paragraphs, 1):
+            item_text = f"¶ {i}: {preview}..."
+            item = QListWidgetItem(item_text)
+            self.navigator_list.addItem(item)
 
     def _set_ready_state(self) -> None:
         have_doc = self.current_document is not None and bool(self.sentences)
@@ -425,6 +500,7 @@ class MainWindow(QMainWindow):
             self.live_worker = None
             self.current_sentence_index = -1
             self.progress.setValue(0)
+            self._populate_navigator()
             self.status.showMessage(f"Loaded {doc.path.name}: {len(self.sentences)} sentence/chunk(s).")
             self._set_ready_state()
         except DocumentLoadError as exc:

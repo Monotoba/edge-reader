@@ -84,21 +84,31 @@ Downloads the latest available voices from Microsoft edge-tts. This requires int
 
 ## Navigating the Document
 
+### Document Navigator Panel
+
+The **Document Navigator** panel appears on the left side of the window and shows all paragraphs in the document. Each entry displays:
+- A paragraph number (¶)
+- A preview of the first 60 characters
+
+**To jump to a paragraph:** Click any entry in the navigator list. The document will jump to that paragraph immediately.
+
+**To show/hide the navigator:** Go to View menu and toggle "Document Navigator", or click the X on the panel to hide it and the button to show it again.
+
 ### Jumping to a Specific Location
 
-**Double-click any text in the document** to jump to that sentence. This is useful for:
+You can also **double-click any text in the document** directly to jump to that sentence. This is useful for:
 - Skipping legal text, disclaimers, or introductions
 - Jumping past table of contents or indexes
 - Skipping to a specific chapter or section
 - Going back to re-listen to something
 
-When you double-click:
-1. The document jumps to that sentence
-2. The sentence is highlighted in yellow
+When you double-click or click a navigator entry:
+1. The document jumps to that location
+2. The location is highlighted in yellow
 3. Progress updates to show your new position
 4. Click Play to start reading from that location
 
-**Note:** Double-clicking does not start playback automatically—use Play to start listening from the new position.
+**Note:** Jumping does not start playback automatically—use Play to start listening from the new position.
 
 ## Playback Controls
 
