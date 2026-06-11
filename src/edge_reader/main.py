@@ -32,6 +32,8 @@ from PySide6.QtWidgets import (
 
 import tempfile
 
+from PySide6.QtCore import pyqtSignal
+
 from .bundle import read_bundle, unpack_bundle
 from .document import DocumentLoadError, load_document
 from .models import LoadedDocument, SentenceSpan, VoiceInfo
@@ -40,6 +42,18 @@ from .workers import FALLBACK_VOICES, SynthesisWorker, VoiceListWorker, LivePlay
 
 APP_ORG = "Monotoba"
 APP_NAME = "EdgeReader"
+
+
+class NavigableTextEdit(QTextEdit):
+    """QTextEdit that emits a signal when user double-clicks to jump to a location."""
+
+    jump_requested = pyqtSignal(int)  # Character position
+
+    def mouseDoubleClickEvent(self, event):  # type: ignore[override]
+        cursor = self.cursorForPosition(event.pos())
+        pos = cursor.position()
+        self.jump_requested.emit(pos)
+        super().mouseDoubleClickEvent(event)
 
 
 def _show_error_dialog(parent: QMainWindow, title: str, message: str, detail: str = "") -> None:
@@ -118,7 +132,7 @@ class MainWindow(QMainWindow):
         self.word_level_highlight = False
         self.word_boundaries: dict[int, list[dict[str, Any]]] = {}
 
-        self.text_edit = QTextEdit(self)
+        self.text_edit = NavigableTextEdit(self)
         self.text_edit.setReadOnly(True)
         self.text_edit.setLineWrapMode(QTextEdit.WidgetWidth)
 
@@ -254,6 +268,7 @@ class MainWindow(QMainWindow):
         self.volume_slider.valueChanged.connect(self._set_volume)
         self.voice_combo.currentTextChanged.connect(lambda _: self._save_voice_settings())
         self.word_highlight_checkbox.stateChanged.connect(self._on_word_highlight_toggled)
+        self.text_edit.jump_requested.connect(self._on_jump_to_position)
 
     def _set_volume(self, value: int) -> None:
         self.audio_output.setVolume(value / 100.0)
@@ -262,6 +277,36 @@ class MainWindow(QMainWindow):
     def _on_word_highlight_toggled(self, state: int) -> None:
         self.word_level_highlight = self.word_highlight_checkbox.isChecked()
         self.settings.setValue("word_highlight", self.word_level_highlight)
+
+    def _on_jump_to_position(self, char_pos: int) -> None:
+        """Jump to the sentence containing the clicked character position."""
+        if not self.sentences:
+            return
+
+        # Find which sentence contains this character position
+        sentence_index = -1
+        for i, sentence in enumerate(self.sentences):
+            if sentence.start <= char_pos < sentence.end:
+                sentence_index = i
+                break
+
+        if sentence_index < 0:
+            return
+
+        # Check if we're playing
+        is_playing = self.player.playbackState() == QMediaPlayer.PlaybackState.PlayingState
+
+        # If playing, stop and jump to new position
+        if is_playing:
+            self.player.stop()
+
+        self.current_sentence_index = sentence_index
+        self.status.showMessage(f"Jumped to sentence {sentence_index + 1}. Click Play to start reading from here.")
+
+        # Highlight the sentence
+        self._highlight_sentence(sentence_index)
+        self.progress.setMaximum(len(self.sentences))
+        self.progress.setValue(sentence_index + 1)
 
     def _set_ready_state(self) -> None:
         have_doc = self.current_document is not None and bool(self.sentences)

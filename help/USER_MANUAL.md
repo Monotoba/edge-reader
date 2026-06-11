@@ -82,11 +82,29 @@ Downloads the latest available voices from Microsoft edge-tts. This requires int
 
 **Note:** If voice refresh fails, Edge Reader falls back to a built-in list of common voices. Check your internet connection and try again.
 
+## Navigating the Document
+
+### Jumping to a Specific Location
+
+**Double-click any text in the document** to jump to that sentence. This is useful for:
+- Skipping legal text, disclaimers, or introductions
+- Jumping past table of contents or indexes
+- Skipping to a specific chapter or section
+- Going back to re-listen to something
+
+When you double-click:
+1. The document jumps to that sentence
+2. The sentence is highlighted in yellow
+3. Progress updates to show your new position
+4. Click Play to start reading from that location
+
+**Note:** Double-clicking does not start playback automatically—use Play to start listening from the new position.
+
 ## Playback Controls
 
 ### Play Button
 
-Starts playback from the beginning of the document or resumes after pause.
+Starts playback from the beginning of the document, from a jumped position, or resumes after pause.
 
 **Two playback modes:**
 

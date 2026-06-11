@@ -78,6 +78,7 @@ The voice list updates automatically when you change the language dropdown. Micr
 
 ## Tips & Tricks
 
+- **Skip sections easily** — Double-click any text to jump to that location. Perfect for skipping legal text, tables of contents, indexes, etc. Then click Play to continue from there.
 - **Live playback requires internet** — Each sentence synthesizes on-the-fly. If your connection drops, synthesis fails and you'll see an error.
 - **Bundles are completely offline** — Once generated, bundles are self-contained and work without any internet connection.
 - **Large documents** — Documents are automatically split into manageable chunks. Very long books may take several minutes to generate into a bundle.

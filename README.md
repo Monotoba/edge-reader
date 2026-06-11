@@ -22,6 +22,7 @@ A cross-platform desktop read-aloud application that loads text/document/ebook f
 - Volume control.
 - **Sentence-by-sentence highlighting** during playback (yellow background).
 - **Word-level highlighting** option for real-time word tracking (cyan background, bold).
+- **Jump to any location:** Double-click anywhere in the text to skip ahead or go back (perfect for skipping legal text, indexes, TOCs, etc.).
 - **Live playback:** Play documents immediately with on-the-fly audio synthesis (requires internet).
 - **Offline bundles:** Generate `.edgevoice.zip` files for later playback without internet access. Bundles contain:
   - `document.txt`
