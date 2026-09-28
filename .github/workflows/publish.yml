@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Dry run (don\'t actually publish)?'
+        description: 'Dry run (do not publish)?'
         required: false
         default: 'false'
 
