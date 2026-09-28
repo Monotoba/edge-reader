@@ -41,13 +41,6 @@ classifiers = [
   "Topic :: Text Processing"
 ]
 
-[project.urls]
-Homepage = "https://github.com/Monotoba/edge-reader"
-Documentation = "https://github.com/Monotoba/edge-reader#readme"
-Repository = "https://github.com/Monotoba/edge-reader.git"
-"Bug Tracker" = "https://github.com/Monotoba/edge-reader/issues"
-Changelog = "https://github.com/Monotoba/edge-reader/releases"
-
 dependencies = [
   "PySide6>=6.7",
   "edge-tts>=6.1.0",
@@ -57,6 +50,13 @@ dependencies = [
   "python-docx>=1.1",
   "striprtf>=0.0.26"
 ]
+
+[project.urls]
+Homepage = "https://github.com/Monotoba/edge-reader"
+Documentation = "https://github.com/Monotoba/edge-reader#readme"
+Repository = "https://github.com/Monotoba/edge-reader.git"
+"Bug Tracker" = "https://github.com/Monotoba/edge-reader/issues"
+Changelog = "https://github.com/Monotoba/edge-reader/releases"
 
 [project.optional-dependencies]
 dev = [
