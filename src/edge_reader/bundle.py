@@ -4,7 +4,6 @@ import json
 import shutil
 import tempfile
 import zipfile
-from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
