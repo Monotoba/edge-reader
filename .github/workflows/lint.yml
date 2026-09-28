@@ -26,14 +26,5 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
 
-    - name: Lint with flake8
-      run: |
-        # Stop the build if there are Python syntax errors or undefined names
-        flake8 src tests --count --select=E9,F63,F7,F82 --show-source --statistics
-        # Exit-zero treats all errors as warnings
-        flake8 src tests --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
-      continue-on-error: true
-
-    - name: Type check with mypy
-      run: mypy src --ignore-missing-imports
-      continue-on-error: true
+    - name: Lint Python
+      run: ruff check --select E4,E7,E9,F src tests
