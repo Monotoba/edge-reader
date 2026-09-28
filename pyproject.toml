@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "edge-readaloud-pyside6"
-version = "0.1.0"
+version = "0.1.0a1"
 description = "Cross-platform desktop read-aloud app with live playback and offline bundles"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,7 +26,7 @@ keywords = [
   "accessibility"
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 3 - Alpha",
   "Environment :: X11 Applications :: Qt",
   "Intended Audience :: End Users/Desktop",
   "Natural Language :: English",
