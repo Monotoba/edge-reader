@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Cross-platform desktop read-aloud app with live playback and offline bundles"
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
 authors = [
   { name = "Monotoba" }
 ]
@@ -29,7 +29,6 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: X11 Applications :: Qt",
   "Intended Audience :: End Users/Desktop",
-  "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
@@ -77,3 +76,8 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
+
+[tool.ruff.lint.per-file-ignores]
+# UI and worker boundaries report unexpected external-library errors to users.
+"src/edge_reader/main.py" = ["BLE001"]
+"src/edge_reader/workers.py" = ["BLE001"]

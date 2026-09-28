@@ -147,8 +147,7 @@ def _calibre_to_text(path: Path) -> str:
         out = Path(td) / "converted.txt"
         proc = subprocess.run(
             [exe, str(path), str(out)],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            capture_output=True,
             text=True,
             check=False,
         )

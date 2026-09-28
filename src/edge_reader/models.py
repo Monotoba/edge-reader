@@ -34,7 +34,7 @@ class VoiceInfo:
     friendly_name: str = ""
 
     @classmethod
-    def from_edge_dict(cls, data: dict[str, Any]) -> "VoiceInfo":
+    def from_edge_dict(cls, data: dict[str, Any]) -> VoiceInfo:
         return cls(
             short_name=str(data.get("ShortName") or data.get("Name") or ""),
             locale=str(data.get("Locale") or ""),

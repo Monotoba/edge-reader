@@ -1,6 +1,13 @@
 from pathlib import Path
 
-from edge_reader.bundle import pack_bundle, read_bundle, unpack_bundle, write_document_text, write_manifest, write_timings
+from edge_reader.bundle import (
+    pack_bundle,
+    read_bundle,
+    unpack_bundle,
+    write_document_text,
+    write_manifest,
+    write_timings,
+)
 from edge_reader.models import SentenceSpan
 
 

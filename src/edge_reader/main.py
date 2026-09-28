@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
-from PySide6.QtCore import QSettings, Qt, QUrl
+from PySide6.QtCore import QSettings, Qt, QUrl, Signal
 from PySide6.QtGui import QAction, QTextCharFormat, QTextCursor
 from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
 from PySide6.QtWidgets import (
@@ -21,8 +22,8 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QMainWindow,
     QMessageBox,
-    QPushButton,
     QProgressBar,
+    QPushButton,
     QSlider,
     QSpinBox,
     QStatusBar,
@@ -33,15 +34,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-import tempfile
-
-from PySide6.QtCore import Signal
-
 from .bundle import read_bundle, unpack_bundle
 from .document import DocumentLoadError, load_document
 from .models import LoadedDocument, SentenceSpan, VoiceInfo
 from .textseg import split_sentences
-from .workers import FALLBACK_VOICES, SynthesisWorker, VoiceListWorker, LivePlaybackWorker
+from .workers import FALLBACK_VOICES, LivePlaybackWorker, SynthesisWorker, VoiceListWorker
 
 APP_ORG = "Monotoba"
 APP_NAME = "EdgeReader"

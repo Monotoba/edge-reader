@@ -19,8 +19,8 @@ def rate_percent_to_edge(rate_percent: int) -> str:
 def _event_to_ms(value: Any) -> int:
     """edge-tts offsets/durations are 100 ns units in current releases."""
     try:
-        return int(round(int(value) / 10_000))
-    except Exception:
+        return round(int(value) / 10_000)
+    except (TypeError, ValueError, OverflowError):
         return 0
 
 
@@ -139,8 +139,6 @@ async def synthesize_bundle(
 
         write_timings(workdir, segments)
         return pack_bundle(workdir, output_bundle)
-    except Exception:
-        raise
     finally:
         # The generated bundle is self-contained. If an exception occurs, remove temp partials.
         shutil.rmtree(workdir, ignore_errors=True)

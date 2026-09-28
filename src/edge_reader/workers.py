@@ -7,7 +7,12 @@ from pathlib import Path
 from PySide6.QtCore import QThread, Signal
 
 from .models import SentenceSpan, VoiceInfo
-from .tts_edge import list_edge_voices, synthesize_bundle, synthesize_sentence_to_file, rate_percent_to_edge
+from .tts_edge import (
+    list_edge_voices,
+    rate_percent_to_edge,
+    synthesize_bundle,
+    synthesize_sentence_to_file,
+)
 
 
 class VoiceListWorker(QThread):
